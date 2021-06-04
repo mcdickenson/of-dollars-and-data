@@ -78,16 +78,16 @@ note_string <- str_wrap(paste0("Note: Assumes all accounts have an annual return
 
 text_labels <- data.frame()
 
-text_labels[1, "year"] <- 24
-text_labels[1, "value"] <- 64000
+text_labels[1, "year"] <- 22
+text_labels[1, "value"] <- 100000
 text_labels[1, "label"] <- "No Tax"
 
-text_labels[2, "year"] <- 21
-text_labels[2, "value"] <- 54000
+text_labels[2, "year"] <- 18
+text_labels[2, "value"] <- 84000
 text_labels[2, "label"] <- "Taxed Once"
 
 text_labels[3, "year"] <- 26
-text_labels[3, "value"] <- 32000
+text_labels[3, "value"] <- 52000
 text_labels[3, "label"] <- "Taxed Annually"
 
 plot <- ggplot(to_plot, aes(x = year, y = value, col = key)) +
