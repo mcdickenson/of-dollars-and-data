@@ -71,7 +71,7 @@ to_plot <- df %>%
               TRUE ~ "Error"
             ))
 
-file_path <- paste0(out_path, "/tax_vs_nontax_account.jpeg")
+file_path <- paste0(out_path, "/tax_vs_nontax_account.png")
 source_string <- paste0("Source: Simulated data (OfDollarsAndData.com)")
 note_string <- str_wrap(paste0("Note: Assumes all accounts have an annual return of ", 100*ret_high, "% and that the tax rate on capital gains is ", 100*cap_gains, "%."),
                         width = 85)
@@ -130,7 +130,7 @@ text_labels[3, "year"] <- 2.3
 text_labels[3, "value"] <- 11000
 text_labels[3, "label"] <- "Taxed Annually"
 
-file_path <- paste0(out_path, "/tax_vs_nontax_account_early.jpeg")
+file_path <- paste0(out_path, "/tax_vs_nontax_account_early.png")
 
 plot <- ggplot(to_plot, aes(x = year, y = value, col = key)) +
   geom_line() +
@@ -155,7 +155,7 @@ to_plot <- df %>%
     TRUE ~ "Error"
   ))
 
-file_path <- paste0(out_path, "/port_high_low_tax_nontax.jpeg")
+file_path <- paste0(out_path, "/port_high_low_tax_nontax.png")
 note_string <- str_wrap(paste0("Note: Assumes that the high growth asset returns ",
                                100*ret_high,
                                "% annually, the low growth asset returns ",
