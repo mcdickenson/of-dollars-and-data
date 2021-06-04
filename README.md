@@ -7,3 +7,9 @@ The numbering of files is consistent with the blog posts on the website.  The bl
 brew install R
 Rscript install_libraries.R
 ```
+
+Tax vs. non-tax accounts:
+
+```
+Rscript analysis/0217_taxable_account_cost.R
+```

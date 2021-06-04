@@ -98,7 +98,7 @@ plot <- ggplot(to_plot, aes(x = year, y = value, col = key)) +
   of_dollars_and_data_theme +
   ggtitle(paste0("Growth of $10,000 by Account Type")) +
   labs(x = "Year" , y = paste0("Growth of $10,000"),
-       caption = paste0(source_string, "\n", note_string))
+       caption = note_string)
 
 # Save the plot
 ggsave(file_path, plot, width = 15, height = 12, units = "cm")
