@@ -2,7 +2,7 @@ cat("\014") # Clear your console
 rm(list = ls()) #clear your environment
 
 ########################## Load in header file ######################## #
-setwd("~/git/of_dollars_and_data")
+setwd("~/github/of-dollars-and-data")
 source(file.path(paste0(getwd(),"/header.R")))
 
 ########################## Load in Libraries ########################## #
@@ -13,6 +13,7 @@ library(lubridate)
 library(zoo)
 library(ggrepel)
 library(tidyverse)
+
 
 folder_name <- "0217_taxable_account_cost"
 out_path <- paste0(exportdir, folder_name)
@@ -38,24 +39,24 @@ for(i in 1:nrow(df)){
   } else{
     df[i, "port_bh_high"] <- df[(i-1), "port_bh_high"] * (1 + ret_high)
     df[i, "port_bh_low"] <- df[(i-1), "port_bh_low"] * (1 + ret_low)
-    
+
     df[i, "port_bh_high_liq"] <-  df[i, "port_bh_high"] - ((df[i, "port_bh_high"] - starting_amount)*(cap_gains))
 
     df[i, "port_high_sell_ann"] <- df[(i-1), "port_high_sell_ann"] * (1 + (ret_high*(1-cap_gains)))
     df[i, "port_low_sell_ann"] <- df[(i-1), "port_low_sell_ann"] * (1 + (ret_low*(1-inc_tax)))
   }
-  
+
   df[i, "port_high_tax_low_nontax"] <- df[i, "port_bh_high_liq"] + df[i, "port_bh_low"]
   df[i, "port_low_tax_high_nontax"] <- df[i, "port_low_sell_ann"] + df[i, "port_bh_high"]
   df[i, "premium_low_tax_high_nontax"] <- df[i, "port_low_tax_high_nontax"]/df[i, "port_high_tax_low_nontax"]
   df[i, "premium_low_tax_high_nontax_ann"] <- df[i, "premium_low_tax_high_nontax"]^(1/i) - 1
-  
+
   df[i, "premium_bh_high_no_sell"] <- df[i, "port_bh_high_liq"]/df[i, "port_high_sell_ann"]
   df[i, "premium_bh_high_no_sell_ann"] <- df[i, "premium_bh_high_no_sell"]^(1/i) - 1
-  
+
   df[i, "premium_bh_high_nontax"] <- df[i, "port_bh_high"]/df[i, "port_bh_high_liq"]
   df[i, "premium_bh_high_nontax_ann"] <- df[i, "premium_bh_high_nontax"]^(1/i) - 1
-  
+
   df[i, "premium_bh_high"] <- df[i, "port_bh_high"]/df[i, "port_high_sell_ann"]
   df[i, "premium_bh_high_ann"] <- df[i, "premium_bh_high"]^(1/i) - 1
 }
@@ -152,15 +153,15 @@ to_plot <- df %>%
     key == "port_high_tax_low_nontax" ~ "High Growth Taxable",
     key == "port_low_tax_high_nontax" ~ "High Growth Nontaxable",
     TRUE ~ "Error"
-  )) 
+  ))
 
 file_path <- paste0(out_path, "/port_high_low_tax_nontax.jpeg")
-note_string <- str_wrap(paste0("Note: Assumes that the high growth asset returns ", 
-                               100*ret_high, 
+note_string <- str_wrap(paste0("Note: Assumes that the high growth asset returns ",
+                               100*ret_high,
                                "% annually, the low growth asset returns ",
                                100*ret_low,
-                               "% annually, and the tax rate on the high growth asset is ", 
-                               100*cap_gains, 
+                               "% annually, and the tax rate on the high growth asset is ",
+                               100*cap_gains,
                                "% (LTCG) while the tax rate on the low growth asset is ",
                                100*inc_tax, "%."),
                         width = 85)
@@ -188,5 +189,4 @@ plot <- ggplot(to_plot, aes(x = year, y = value, col = key)) +
 
 # Save the plot
 ggsave(file_path, plot, width = 15, height = 12, units = "cm")
-
 # ############################  End  ################################## #
