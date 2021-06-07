@@ -99,7 +99,7 @@ plot <- ggplot(to_plot, aes(x = year, y = value, col = key)) +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
   ggtitle(paste0("Intrinsic Value of Stock Options")) +
   labs(x = "Time" , y = paste0("Stock Price"),
-       caption = note_string)
+       caption = NULL)
 
 # Save the plot
 ggsave(file_path, plot, width = 15, height = 12, units = "cm")
