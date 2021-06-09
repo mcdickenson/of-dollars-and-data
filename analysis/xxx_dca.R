@@ -149,7 +149,7 @@ plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
   geom_line() +
   geom_text(data=text_labels, aes(x=date, y=value, col = label, label = label)) +
   scale_y_continuous(label = percent) +
-  scale_color_manual(guide = FALSE, values = c("red", "blue")) +
+  scale_color_manual(guide = FALSE, values = c(red, blue)) +
   of_dollars_and_data_theme +
   ggtitle(paste0("Selling Strategies")) +
   labs(x = "Year" , y = "Performance vs. Immediate Sale",

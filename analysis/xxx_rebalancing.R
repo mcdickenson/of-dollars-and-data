@@ -164,7 +164,7 @@ plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
   geom_line() +
   geom_text(data=text_labels, aes(x=date, y=value, col = label, label = label)) +
   scale_y_continuous(label = dollar) +
-  scale_color_manual(guide = FALSE, values = c("red", "blue")) +
+  scale_color_manual(guide = FALSE, values = c(red, blue)) +
   of_dollars_and_data_theme +
   ggtitle(paste0("Rebalancing")) +
   labs(x = "Year" , y = "Portfolio Value",
@@ -202,7 +202,7 @@ plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
   geom_line() +
   geom_text(data=text_labels, aes(x=date, y=value, col = label, label = label)) +
   scale_y_continuous(label = percent) +
-  scale_color_manual(guide = FALSE, values = c("red", "blue")) +
+  scale_color_manual(guide = FALSE, values = c(red, blue)) +
   of_dollars_and_data_theme +
   ggtitle(paste0("Rebalancing")) +
   labs(x = "Year" , y = "Portfolio Stock Allocation (%)",
@@ -251,7 +251,7 @@ plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
   geom_line() +
   geom_text(data=text_labels, aes(x=date, y=value, col = label, label = label)) +
   scale_y_continuous(label = percent) +
-  scale_color_manual(guide = FALSE, values = c("red", "blue")) +
+  scale_color_manual(guide = FALSE, values = c(red, blue)) +
   of_dollars_and_data_theme +
   ggtitle(paste0("Rebalancing")) +
   labs(x = "Year" , y = "Monthly Portfolio Value Change (%)",

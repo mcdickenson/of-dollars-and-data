@@ -94,7 +94,7 @@ plot <- ggplot(to_plot, aes(x = year, y = value, col = key)) +
   geom_line() +
   geom_text(data=text_labels, aes(x=year, y=value, col = label, label = label)) +
   scale_y_continuous(label = dollar) +
-  scale_color_manual(guide = FALSE, values = c("black", "red", "blue")) +
+  scale_color_manual(guide = FALSE, values = c("black", red, blue)) +
   of_dollars_and_data_theme +
   ggtitle(paste0("Growth of $10,000 by Account Type")) +
   labs(x = "Year" , y = paste0("Growth of $10,000"),
@@ -136,7 +136,7 @@ plot <- ggplot(to_plot, aes(x = year, y = value, col = key)) +
   geom_line() +
   geom_text(data=text_labels, aes(x=year, y=value, col = label, label = label)) +
   scale_y_continuous(label = dollar) +
-  scale_color_manual(guide = FALSE, values = c("black", "red", "blue")) +
+  scale_color_manual(guide = FALSE, values = c("black", red, blue)) +
   of_dollars_and_data_theme +
   ggtitle(paste0("Growth of $10,000 by Account Type\nFor First 3 Years")) +
   labs(x = "Year" , y = paste0("Growth of $10,000"),

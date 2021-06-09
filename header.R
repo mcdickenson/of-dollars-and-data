@@ -19,6 +19,9 @@ options(stringsAsFactors=FALSE)
 highlight_standard_color <- "#D6E6F1"
 chart_standard_color     <- "#003C68"
 
+red = "#EF8A62"
+blue = "#67A9CF"
+
 # Set my font for MAC (just download and install OTF fonts then use quartzFonts)
 quartzFonts(my_font = quartzFont(c("Verdana",
                                  "Verdana Bold",

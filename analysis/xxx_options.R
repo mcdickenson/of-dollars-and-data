@@ -94,7 +94,7 @@ plot <- ggplot(to_plot, aes(x = year, y = value, col = key)) +
   geom_text(data=text_labels, aes(x=year, y=value, col = label, label = label)) +
   geom_line() +
   scale_y_continuous(label = dollar) +
-  scale_color_manual(guide = FALSE, values = c("blue", "black", "red")) +
+  scale_color_manual(guide = FALSE, values = c(blue, "black", red)) +
   of_dollars_and_data_theme +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
   ggtitle(paste0("Intrinsic Value of Stock Options")) +
