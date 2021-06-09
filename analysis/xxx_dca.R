@@ -132,7 +132,7 @@ to_plot <- qqq_df[1:(nrow(qqq_df)-n_months), ] %>%
             ))
 
 file_path <- paste0(out_path, "/selling_strategies.png")
-source_string <- paste0("Source: Wall Street Journal (https://www.wsj.com/market-data/quotes/etf/QQQ/historical-prices)")
+source_string <- paste0("Source: Wall Street Journal historical prices for QQQ ETF.")
 note_string <- str_wrap("Note: All sales use the first closing price of the month.",width = 85)
 
 text_labels <- data.frame()
@@ -153,7 +153,7 @@ plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
   of_dollars_and_data_theme +
   ggtitle(paste0("Selling Strategies")) +
   labs(x = "Year" , y = "Performance vs. Immediate Sale",
-       caption = note_string)
+       caption = paste0(source_string, "\n", note_string))
 
 # Save the plot
 ggsave(file_path, plot, width = 15, height = 12, units = "cm")
