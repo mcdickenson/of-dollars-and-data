@@ -72,8 +72,9 @@ shy_df = as.data.frame(shy)
 
 # Merge
 df <- merge(spx_df, shy_df, by=c('date', 'year', 'month'), all.x=FALSE, all.y=TRUE)
+df = df[2:nrow(df), ] # mismatch at very beginning
+names(df)[4] = 'spx'
+names(df)[5] = 'shy'
 print(head(df))
 print(tail(df))
 
-names(df)[4] = 'spx'
-names(df)[5] = 'shy'
