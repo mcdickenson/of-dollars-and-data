@@ -13,3 +13,9 @@ Tax vs. non-tax accounts:
 ```
 Rscript analysis/0217_taxable_account_cost.R
 ```
+
+Selling strategies:
+
+```
+Rscript analysis/xxx_dca.R
+```

@@ -24,7 +24,7 @@ dir.create(file.path(paste0(out_path)), showWarnings = FALSE)
 
 print(importdir)
 
-spx <- read.csv(paste0(importdir, "HistoricalPricesSPX.csv"), strip.white=TRUE) %>%
+qqq <- read.csv(paste0(importdir, "HistoricalPricesQQQ.csv"), strip.white=TRUE) %>%
   rename(date_raw=Date,
          close=Close) %>%
   mutate(
@@ -41,49 +41,77 @@ spx <- read.csv(paste0(importdir, "HistoricalPricesSPX.csv"), strip.white=TRUE) 
   select(date, year, month, close) %>%
   arrange(date)
 
-print(head(spx))
-print(tail(spx))
+print(head(qqq))
+print(tail(qqq))
 
-spx_df = as.data.frame(spx)
+qqq_df = as.data.frame(qqq)
 
-spx_df$return_ls = NA
-spx_df$return_dca = NA
 
-print(head(spx_df))
-print(tail(spx_df))
+# Three strategies
+# LS: sell all immediately ($12,000)
+# DCA: sell a variable number of shares each month to reach a target dollar amount ($1,000/month)
+# Fixed: sell a fixed number of shares each month (1/12 of what $12,000 buys at the beginning of the period)
+# Notes: uses QQQ data to target Nasdaq, because it's a tech index
+qqq_df$return_ls = NA
+qqq_df$return_dca = NA
+qqq_df$return_fixed = NA
 
-n_years = 5
+print(head(qqq_df))
+print(tail(qqq_df))
+
+n_months = 12
+dollar_amount = 12000
+dollar_amount_per_month = dollar_amount / n_months
 
 # run investment
-for(i in 1:nrow(spx_df)){
-  current_year = as.integer(spx$year[i])
-  current_month = spx$month[i]
-  end_year = as.character(current_year + n_years)
+for(i in 1:nrow(qqq_df)){
+  current_year = as.integer(qqq$year[i])
+  current_month = qqq$month[i]
+  current_price = qqq$close[i]
+  # end_year = as.character(current_year + n_years)
 
-  # Calculate lump sum investment
-  end_row = which(spx$year == end_year & spx$month == current_month)
-  # if end_row is null, continue / break
-  if(length(end_row) == 0){
-    next
+
+  # Strategy 1: lump-sum sale
+  qqq_df$return_ls = dollar_amount
+
+  # Strategy 2: DCA
+  n_shares_dca = dollar_amount / qqq$close[i]
+  shares_remaining = n_shares_dca
+  offset = 0
+  qqq_df$return_dca[i] = 0
+  while(shares_remaining >= 1.0 & (i + offset < nrow(qqq_df))) {
+    # get a month's price
+    price_this_month = qqq$close[i+offset]
+    # figure out how many to sell
+    shares_to_sell = round(1000.0 / price_this_month)
+    shares_to_sell = min(shares_to_sell, shares_remaining)
+    print(paste0("dca selling ", shares_to_sell, " at $", price_this_month))
+    qqq_df$return_dca[i] = qqq_df$return_dca[i] + (shares_to_sell * price_this_month)
+    shares_remaining = shares_remaining - shares_to_sell
+    offset = offset + 1
   }
-  end_val = spx$close[end_row[1]]
-  print(paste0("end val: ", end_val))
 
-  return_perc = (as.double(end_val) / as.double(spx$close[i]))
-  print(paste0("return: ", return_perc))
+  # Strategy 3: Fixed number of shares
+  n_shares_fixed = dollar_amount / qqq$close[i] # starting number
+  shares_remaining = n_shares_fixed
+  offset = 0
+  qqq_df$return_fixed[i] = 0
+  while(shares_remaining >= 1.0 & (i + offset < nrow(qqq_df))) {
+    # get a month's price
+    price_this_month = qqq$close[i+offset]
+    # figure out how many to sell
+    shares_to_sell = round(n_shares_fixed / n_months)
+    shares_to_sell = min(shares_to_sell, shares_remaining)
+    # sell them
+    print(paste0("fixed selling ", shares_to_sell, " at $", price_this_month))
+    qqq_df$return_fixed[i] = qqq_df$return_fixed[i] + (shares_to_sell * price_this_month)
+    shares_remaining = shares_remaining - shares_to_sell
+    offset = offset + 1
+  }
 
-  # TODO might make sense to store this on end_val instead?
-  spx_df$return_ls[i] = 12000 * return_perc
-
-
-  # Calculate DCA investment starting today
-  # TODO
 }
-print(head(spx_df))
-print(tail(spx_df))
+print(head(qqq_df))
+print(tail(qqq_df))
 
-# lump sum is the simple % of 120 months later
-# DCA is the weighted return of investing $1k/month for 12 consecutive months,
-# and what you get 120 months after the beginning of the period
 
 
