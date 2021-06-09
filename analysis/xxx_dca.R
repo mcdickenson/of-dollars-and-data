@@ -113,48 +113,51 @@ for(i in 1:nrow(qqq_df)){
 print(head(qqq_df))
 print(tail(qqq_df))
 
+qqq_df$dca_outperformance = qqq_df$return_dca / qqq_df$return_ls
+qqq_df$dca_outperformance = qqq_df$dca_outperformance - 1
+qqq_df$fixed_outperformance = qqq_df$return_fixed / qqq_df$return_ls
+qqq_df$fixed_outperformance = qqq_df$fixed_outperformance - 1
+
+
+print(summary(qqq_df[1:(nrow(qqq_df)-n_months), ]))
 
 # Plot the results
-to_plot <- qqq_df %>%
-            select(date, contains("return")) %>%
+to_plot <- qqq_df[1:(nrow(qqq_df)-n_months), ] %>%
+            select(date, contains("outperformance")) %>%
             gather(-date, key=key, value=value) %>%
             mutate(key = case_when(
-              key == "return_ls" ~ "Sell Immediately",
-              key == "return_dca" ~ "Target Dollar Amount",
-              key == "return_fixed" ~ "Target Share Count",
+              key == "dca_outperformance" ~ "Target Dollar Amount",
+              key == "fixed_outperformance" ~ "Target Share Count",
               TRUE ~ "Error"
             ))
 
 file_path <- paste0(out_path, "/selling_strategies.png")
 source_string <- paste0("Source: Wall Street Journal (https://www.wsj.com/market-data/quotes/etf/QQQ/historical-prices)")
-note_string <- str_wrap("Note here",width = 85)
+note_string <- str_wrap("Note: All sales use the first closing price of the month.",width = 85)
 
 text_labels <- data.frame()
 
-text_labels[1, "date"] <- 22
-text_labels[1, "value"] <- 100000
-text_labels[1, "label"] <- "Sell Immediately"
+text_labels[1, "date"] <- as.Date("2012-08-01", "%Y-%m-%d")
+text_labels[1, "value"] <- 0.5
+text_labels[1, "label"] <- "Target Dollar Amount"
 
-text_labels[2, "date"] <- 18
-text_labels[2, "value"] <- 84000
-text_labels[2, "label"] <- "Target Dollar Amount"
-
-text_labels[3, "date"] <- 26
-text_labels[3, "value"] <- 52000
-text_labels[3, "label"] <- "Target Share Count"
+text_labels[2, "date"] <- as.Date("2005-08-01", "%Y-%m-%d")
+text_labels[2, "value"] <- 0.4
+text_labels[2, "label"] <- "Target Share Count"
 
 plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
   geom_line() +
-  # geom_text(data=text_labels, aes(x=date, y=value, col = label, label = label)) +
-  scale_y_continuous(label = dollar) +
-  scale_color_manual(guide = FALSE, values = c("black", "red", "blue")) +
+  geom_text(data=text_labels, aes(x=date, y=value, col = label, label = label)) +
+  scale_y_continuous(label = percent) +
+  scale_color_manual(guide = FALSE, values = c("red", "blue")) +
   of_dollars_and_data_theme +
   ggtitle(paste0("Selling Strategies")) +
-  labs(x = "Year" , y = "Dollar Value",
+  labs(x = "Year" , y = "Performance vs. Immediate Sale",
        caption = note_string)
 
 # Save the plot
 ggsave(file_path, plot, width = 15, height = 12, units = "cm")
 
+# print(summary(to_plot))
 
 
