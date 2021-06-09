@@ -158,6 +158,6 @@ plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
 # Save the plot
 ggsave(file_path, plot, width = 15, height = 12, units = "cm")
 
-# print(summary(to_plot))
+print(summary(to_plot))
 
 

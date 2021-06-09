@@ -259,3 +259,6 @@ plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
 
 # Save the plot
 ggsave(file_path, plot, width = 15, height = 12, units = "cm")
+
+bad_rows = which(df$perc_change_norebalance < -0.14)
+print(df[bad_rows, ])
