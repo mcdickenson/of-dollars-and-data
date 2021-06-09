@@ -210,3 +210,52 @@ plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
 
 # Save the plot
 ggsave(file_path, plot, width = 15, height = 12, units = "cm")
+
+
+# Check the month-over-month drawdowns
+df['value_norebalance_prevmonth'] <- c(NA, df$value_norebalance[1:(nrow(df)-1)])
+df['value_rebalance_prevmonth'] <- c(NA, df$value_rebalance[1:(nrow(df)-1)])
+df <- df[apply(df, 1, function(x) !any(is.na(x))), ]
+
+df$perc_change_norebalance = df$value_norebalance / as.double(df$value_norebalance_prevmonth)
+df$perc_change_norebalance = df$perc_change_norebalance - 1
+df$perc_change_rebalance = df$value_rebalance / as.double(df$value_rebalance_prevmonth)
+df$perc_change_rebalance = df$perc_change_rebalance - 1
+print(summary(df))
+
+
+to_plot <- df %>%
+            select(date, contains("perc_change")) %>%
+            gather(-date, key=key, value=value) %>%
+            mutate(key = case_when(
+              key == "perc_change_norebalance" ~ "No Rebalancing",
+              key == "perc_change_rebalance" ~ "Rebalance Twice Per Year",
+              TRUE ~ "Error"
+            ))
+
+file_path <- paste0(out_path, "/rebalancing_strategies_perc_change.png")
+source_string <- paste0("Source: Wall Street Journal historical prices.")
+note_string <- str_wrap("Note: All calculations use the first closing price of the month.",width = 85)
+
+text_labels <- data.frame()
+
+text_labels[1, "date"] <- as.Date("2016-01-01", "%Y-%m-%d")
+text_labels[1, "value"] <- -0.1
+text_labels[1, "label"] <- "No Rebalancing"
+
+text_labels[2, "date"] <- as.Date("2013-08-01", "%Y-%m-%d")
+text_labels[2, "value"] <- 0.1
+text_labels[2, "label"] <- "Rebalance Twice Per Year"
+
+plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
+  geom_line() +
+  geom_text(data=text_labels, aes(x=date, y=value, col = label, label = label)) +
+  scale_y_continuous(label = percent) +
+  scale_color_manual(guide = FALSE, values = c("red", "blue")) +
+  of_dollars_and_data_theme +
+  ggtitle(paste0("Rebalancing")) +
+  labs(x = "Year" , y = "Monthly Portfolio Value Change (%)",
+       caption = paste0(source_string, "\n", note_string))
+
+# Save the plot
+ggsave(file_path, plot, width = 15, height = 12, units = "cm")
