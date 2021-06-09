@@ -60,6 +60,7 @@ for(i in 1:nrow(spx_df)){
   current_month = spx$month[i]
   end_year = as.character(current_year + n_years)
 
+  # Calculate lump sum investment
   end_row = which(spx$year == end_year & spx$month == current_month)
   # if end_row is null, continue / break
   if(length(end_row) == 0){
@@ -71,7 +72,12 @@ for(i in 1:nrow(spx_df)){
   return_perc = (as.double(end_val) / as.double(spx$close[i]))
   print(paste0("return: ", return_perc))
 
+  # TODO might make sense to store this on end_val instead?
   spx_df$return_ls[i] = 12000 * return_perc
+
+
+  # Calculate DCA investment starting today
+  # TODO
 }
 print(head(spx_df))
 print(tail(spx_df))
