@@ -78,3 +78,52 @@ names(df)[5] = 'shy'
 print(head(df))
 print(tail(df))
 
+# Run rebalancing strategy
+# 1. invest at the beginning of the period
+# 2. rebalance annually for desired mix (80/20?)
+# 3. compare that to never rebalancing
+# what time horizon? 5 or 10 years?
+
+portfolio_initial_value = 10000
+percent_stocks = 0.8
+percent_bonds = 1.0 - percent_stocks
+
+# no rebalancing
+dollars_stocks = portfolio_initial_value * percent_stocks
+count_stocks = round(dollars_stocks / df$spx[1])
+df$count_stocks_norebalance = count_stocks
+dollars_bonds = portfolio_initial_value - (count_stocks * df$spx[1])
+count_bonds = round(dollars_bonds / df$shy[1])
+df$count_bonds_norebalance = count_bonds
+df$value_norebalance = (df$spx * df$count_stocks_norebalance) + (df$shy * df$count_bonds_norebalance)
+print(head(df))
+print(tail(df))
+# todo calculate percent value to see how thrown off things get
+
+df$value_rebalance = 0
+df$count_stocks_rebalance = 0
+df$count_stocks_rebalance[1] = count_stocks
+df$count_bonds_rebalance = 0
+df$count_bonds_rebalance[1] = count_bonds
+
+# run investment
+for(i in 2:nrow(df)){
+  if(i %% 6 == 0){
+    # time for a rebalance
+    current_stocks = df$count_stocks_rebalance[i-1]
+    current_bonds = df$count_bonds_rebalance[i-1]
+    current_value = (df$spx[i] * current_stocks) + (df$shy[i] * current_bonds)
+    dollars_stocks = current_value * percent_stocks
+    count_stocks = round(dollars_stocks / df$spx[i])
+    df$count_stocks_rebalance[i] = count_stocks
+    dollars_bonds = current_value - (count_stocks * df$spx[i])
+    count_bonds = round(dollars_bonds / df$shy[i])
+    df$count_bonds_rebalance[i] = count_bonds
+  } else {
+    df$count_stocks_rebalance[i] = df$count_stocks_rebalance[i-1]
+    df$count_bonds_rebalance[i] = df$count_bonds_rebalance[i-1]
+  }
+}
+df$value_rebalance = (df$spx * df$count_stocks_rebalance) + (df$shy * df$count_bonds_rebalance)
+print(head(df))
+print(tail(df))
