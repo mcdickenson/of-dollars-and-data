@@ -16,7 +16,7 @@ library(lemon)
 library(tidyverse)
 library(dplyr)
 
-folder_name <- "dca"
+folder_name <- "rebalancing"
 out_path <- paste0(exportdir, folder_name)
 dir.create(file.path(paste0(out_path)), showWarnings = FALSE)
 
@@ -127,3 +127,42 @@ for(i in 2:nrow(df)){
 df$value_rebalance = (df$spx * df$count_stocks_rebalance) + (df$shy * df$count_bonds_rebalance)
 print(head(df))
 print(tail(df))
+
+print(summary(df))
+
+# Plot the results
+to_plot <- df %>%
+            select(date, contains("value")) %>%
+            gather(-date, key=key, value=value) %>%
+            mutate(key = case_when(
+              key == "value_norebalance" ~ "No Rebalancing",
+              key == "value_rebalance" ~ "Rebalance Twice Per Year",
+              TRUE ~ "Error"
+            ))
+
+file_path <- paste0(out_path, "/rebalancing_strategies.png")
+source_string <- paste0("Source: Wall Street Journal historical prices.")
+note_string <- str_wrap("Note: All calculations use the first closing price of the month.",width = 85)
+
+text_labels <- data.frame()
+
+text_labels[1, "date"] <- as.Date("2012-08-01", "%Y-%m-%d")
+text_labels[1, "value"] <- 10000
+text_labels[1, "label"] <- "No Rebalancing"
+
+text_labels[2, "date"] <- as.Date("2005-08-01", "%Y-%m-%d")
+text_labels[2, "value"] <- 10000
+text_labels[2, "label"] <- "Rebalance Twice Per Year"
+
+plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
+  geom_line() +
+  geom_text(data=text_labels, aes(x=date, y=value, col = label, label = label)) +
+  scale_y_continuous(label = dollar) +
+  scale_color_manual(guide = FALSE, values = c("red", "blue")) +
+  of_dollars_and_data_theme +
+  ggtitle(paste0("Rebalancing")) +
+  labs(x = "Year" , y = "Portfolio Value",
+       caption = paste0(source_string, "\n", note_string))
+
+# Save the plot
+ggsave(file_path, plot, width = 15, height = 12, units = "cm")
