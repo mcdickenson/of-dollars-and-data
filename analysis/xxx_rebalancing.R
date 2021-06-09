@@ -95,10 +95,13 @@ df$count_stocks_norebalance = count_stocks
 dollars_bonds = portfolio_initial_value - (count_stocks * df$spx[1])
 count_bonds = round(dollars_bonds / df$shy[1])
 df$count_bonds_norebalance = count_bonds
-df$value_norebalance = (df$spx * df$count_stocks_norebalance) + (df$shy * df$count_bonds_norebalance)
+df$price_stocks_norebalance = df$spx * df$count_stocks_norebalance
+df$value_norebalance = df$price_stocks_norebalance + (df$shy * df$count_bonds_norebalance)
 print(head(df))
 print(tail(df))
+
 # todo calculate percent value to see how thrown off things get
+df$perc_stocks_norebalance = df$price_stocks_norebalance / df$value_norebalance
 
 df$value_rebalance = 0
 df$count_stocks_rebalance = 0
@@ -125,6 +128,9 @@ for(i in 2:nrow(df)){
   }
 }
 df$value_rebalance = (df$spx * df$count_stocks_rebalance) + (df$shy * df$count_bonds_rebalance)
+df$price_stocks_rebalance = df$spx * df$count_stocks_rebalance
+df$perc_stocks_rebalance = df$price_stocks_rebalance / df$value_rebalance
+
 print(head(df))
 print(tail(df))
 
@@ -162,6 +168,44 @@ plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
   of_dollars_and_data_theme +
   ggtitle(paste0("Rebalancing")) +
   labs(x = "Year" , y = "Portfolio Value",
+       caption = paste0(source_string, "\n", note_string))
+
+# Save the plot
+ggsave(file_path, plot, width = 15, height = 12, units = "cm")
+
+
+# What % of the portfolio is in stocks?
+to_plot <- df %>%
+            select(date, contains("perc")) %>%
+            gather(-date, key=key, value=value) %>%
+            mutate(key = case_when(
+              key == "perc_stocks_norebalance" ~ "No Rebalancing",
+              key == "perc_stocks_rebalance" ~ "Rebalance Twice Per Year",
+              TRUE ~ "Error"
+            ))
+
+file_path <- paste0(out_path, "/rebalancing_strategies_perc.png")
+source_string <- paste0("Source: Wall Street Journal historical prices.")
+note_string <- str_wrap("Note: All calculations use the first closing price of the month.",width = 85)
+
+text_labels <- data.frame()
+
+text_labels[1, "date"] <- as.Date("2012-01-01", "%Y-%m-%d")
+text_labels[1, "value"] <- 0.9
+text_labels[1, "label"] <- "No Rebalancing"
+
+text_labels[2, "date"] <- as.Date("2012-08-01", "%Y-%m-%d")
+text_labels[2, "value"] <- 0.7
+text_labels[2, "label"] <- "Rebalance Twice Per Year"
+
+plot <- ggplot(to_plot, aes(x = date, y = value, col = key)) +
+  geom_line() +
+  geom_text(data=text_labels, aes(x=date, y=value, col = label, label = label)) +
+  scale_y_continuous(label = percent) +
+  scale_color_manual(guide = FALSE, values = c("red", "blue")) +
+  of_dollars_and_data_theme +
+  ggtitle(paste0("Rebalancing")) +
+  labs(x = "Year" , y = "Portfolio Stock Allocation (%)",
        caption = paste0(source_string, "\n", note_string))
 
 # Save the plot
